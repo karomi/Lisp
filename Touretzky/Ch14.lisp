@@ -128,5 +128,5 @@
       ((null (node-outputs *current-node*)))
     (one-transition)))
 
-hold for more
+
 
