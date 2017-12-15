@@ -128,5 +128,14 @@
       ((null (node-outputs *current-node*)))
     (one-transition)))
 
+14.8
+
+Writing macros with side-effects is unwise because 
+macro expansion can occur at any time when executing
+a program. If a macro is compiled, the result on
+execution may be whatever value is returned by
+the macro instead of the side-effect.
+
+14.9
 
 
