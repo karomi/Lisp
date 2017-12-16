@@ -128,6 +128,10 @@
       ((null (node-outputs *current-node*)))
     (one-transition)))
 
+;; before running fsm
+(initialize)
+(load "c:/Users/michael/Code/Lisp/ch/chap14.lisp")
+
 14.8
 
 Writing macros with side-effects is unwise because 
@@ -138,4 +142,49 @@ the macro instead of the side-effect.
 
 14.9
 
+Common Lisp special functions:
 
+block		catch		[compiler-let]
+declare		eval-when	flet
+function	go			if
+labels		let			let*
+macrolet	multiple-value-call multiple-value-prog1
+progn		progv		quote
+return-form	setq		tagbody
+the			throw		unwind-protect
+
+14.10
+
+10 to 100% faster after compilation
+
+14.11
+
+a.
+
+(defun compile-arc (arc)
+  (let ((a (arc-action arc)))
+    `((equal this-input ',(arc-label arc))
+      (format t "~&~A" ,a)
+      (,(node-name (arc-to arc))
+	(rest input-syms)))))
+
+b.
+
+(defun compile-node (node)
+  (let ((name (node-name node))
+	(arc-clauses
+	 (mapcar #'compile-arc
+		 (node-outputs node))))
+    `(defun ,name (input-syms
+		   &aux (this-input
+			 (first input-syms)))
+       (cond ((null input-syms) ',name)
+	     ,@arc-clauses
+	     (t (format t
+			"~&There is no arc from ~A with label ~S"
+			',name this-input))))))
+
+c.
+
+(defun compile-machine ()
+  (progn ,@(mapcar #'compile-node *nodes*)))
